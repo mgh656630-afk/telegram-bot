@@ -114,4 +114,5 @@ def handle(message):
 
 print("🚀 البوت اشتغل يا غيث")
 bot.infinity_polling()
-    bot.infinity_polling(timeout=5, long_polling_timeout=2)
+bot.infinity_polling(timeout=5, long_polling_timeout=2)
+
