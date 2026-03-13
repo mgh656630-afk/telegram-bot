@@ -1,4 +1,6 @@
-import telebot from telebot import types import os
+import telebot
+from telebot import types
+import os
 
 # ⚠️ استبدل التوكن بتوكن جديد فوراً
 TOKEN = "8377189184:AAGLhZ5mpVkeWwz1uL5NdhcqbHCDOWLSBzU"
@@ -54,10 +56,8 @@ def start(message):
 # معالجة الصور (إيصالات الدفع)
 @bot.message_handler(content_types=['photo'])
 def handle_payment_photo(message):
-    # تحويل الإيصال للأدمن
     bot.forward_message(MY_ADMIN_ID, message.chat.id, message.message_id)
     bot.send_message(MY_ADMIN_ID, f"🔔 إيصال جديد من: @{message.from_user.username} (ID: {message.chat.id})")
-    # فتح خيارات الاستشارة للمستخدم
     post_payment_menu(message.chat.id)
 
 @bot.message_handler(func=lambda m: True)
@@ -84,7 +84,7 @@ def handle(message):
         bot.send_message(chat_id, payment_msg, parse_mode="Markdown")
 
     elif text == "📅 جدول 14 يوم":
-        send_file(chat_id, "schedule.pdf")
+        send_file(chat_id, "schedule14.pdf")
 
     elif text == "📅 جدول 20 يوم":
         send_file(chat_id, "schedule20.pdf")
@@ -110,7 +110,6 @@ def handle(message):
         markup.add(types.InlineKeyboardButton("📩 راسلني على التلغرام", url="https://t.me/V_u_23"))
         bot.send_message(chat_id, "اضغط للتواصل 👇", reply_markup=markup)
 
-    # أزرار الاستشارة بعد الدفع
     elif text == "🎓 استشارة في البكالوريا":
         bot.send_message(chat_id, "ممتاز! سأقوم بمتابعة وضعك في البكالوريا بأقرب وقت.")
     
@@ -127,6 +126,3 @@ def handle(message):
 
 print("🚀 البوت اشتغل بنجاح!")
 bot.infinity_polling(timeout=10, long_polling_timeout=5)
-        
-
-
