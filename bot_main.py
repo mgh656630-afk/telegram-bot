@@ -1,6 +1,4 @@
-import telebot
-from telebot import types
-import os
+import telebot from telebot import types import os
 
 # ⚠️ استبدل التوكن بتوكن جديد فوراً
 TOKEN = "8377189184:AAGLhZ5mpVkeWwz1uL5NdhcqbHCDOWLSBzU"
@@ -130,4 +128,5 @@ def handle(message):
 print("🚀 البوت اشتغل بنجاح!")
 bot.infinity_polling(timeout=10, long_polling_timeout=5)
         
+
 
