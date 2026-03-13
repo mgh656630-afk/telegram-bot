@@ -1,4 +1,4 @@
-        import telebot
+import telebot
 from telebot import types
 import os
 
@@ -86,7 +86,7 @@ def handle(message):
         bot.send_message(chat_id, payment_msg, parse_mode="Markdown")
 
     elif text == "📅 جدول 14 يوم":
-        send_file(chat_id, "schedule14.pdf")
+        send_file(chat_id, "schedule.pdf")
 
     elif text == "📅 جدول 20 يوم":
         send_file(chat_id, "schedule20.pdf")
@@ -130,3 +130,4 @@ def handle(message):
 print("🚀 البوت اشتغل بنجاح!")
 bot.infinity_polling(timeout=10, long_polling_timeout=5)
         
+
