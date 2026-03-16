@@ -18,17 +18,29 @@ def ask_shaza(prompt_type):
     prompts = {
         "poetry": "اكتب بيت شعر واحد فقط باللهجة العراقية عن الطموح والنجاح، وبدي كل مرة يكون البيت مختلف.",
         "quote": "أعطني اقتباساً عالمياً ملهماً عن الإصرار مع ذكر اسم صاحب المقولة، غير اللي قلته قبل قليل.",
-        "boost": "أنتِ شهد، طالبة صيدلة زميلة ومحبة. وجهي رسالة تحفيزية قصيرة جداً ولهجة سورية لطيفة لزميلك غيث اللي عم يدرس صيدلة وتعبان، كل مرة غيري العبارة."
+        "boost": "أنتِ شهد، طالبة صيدلة زميلة ومحبة. وجهي رسالة تحفيزية قصيرة جداً بلهجة سورية لطيفة لزميلك غيث، كل مرة غيري العبارة."
     }
     
     try:
-        # إضافة عنصر عشوائي بسيط للطلب عشان الـ AI ما يكرر نفسه
-        random_suffix = f" (تحديث رقم: {random.randint(1, 1000)})"
-        response = ai_model.generate_content(prompts[prompt_type] + random_suffix)
-        return response.text
-    except:
-        return "خلي طموحك عالي، النجاح بيستاهل التعب! ✨" # هاد الرد الاحتياطي
-
+        # تأكد إننا عم نستخدم الموديل الصح جوا الدالة
+        response = ai_model.generate_content(prompts[prompt_type])
+        
+        if response and response.text:
+            return response.text
+        else:
+            return "يا غيث، الـ AI عطى رد فارغ، جرب مرة تانية."
+            
+    except Exception as e:
+        # هي السطر عشان يطبعلك السبب الحقيقي للخطأ بالـ Terminal في ريلواي
+        print(f"❌ AI Error: {e}")
+        
+        # ردود متنوعة يدوية عشان ما تمل إذا فصل الـ AI
+        fallback_responses = [
+            "النجاح بدو صبر، وأنت قده يا دكتور غيث! ✨",
+            "استريح شوي وكمل، صيدلة مو سهلة بس أنت بطل. 💊",
+            "لا تنسى هدفك، المنحة التركية ناطرتك! 🚀"
+        ]
+        return random.choice(fallback_responses)
 # ------------------ حفظ المشتركين وإرسال الملفات ------------------
 def save_user(chat_id):
     with open("users.txt", "a+") as f:
