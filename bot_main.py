@@ -4,14 +4,13 @@ import os
 import random
 import google.generativeai as genai
 
-# ⚠️ الإعدادات الأساسية
+# الإعدادات الأساسية (صارت تسحب من ريلواي مباشرة)
 TOKEN = os.getenv("TOKEN")
 MY_ADMIN_ID = 5825392632
 genai.configure(api_key=os.getenv("GEMINI_KEY"))
 ai_model = genai.GenerativeModel('gemini-1.5-flash')
 
 bot = telebot.TeleBot(TOKEN)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ------------------ نظام الذكاء الاصطناعي ------------------
 def ask_shaza(prompt_type):
