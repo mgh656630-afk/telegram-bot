@@ -5,9 +5,9 @@ import random
 import google.generativeai as genai
 
 # ⚠️ الإعدادات الأساسية
-TOKEN = "8377189184:AAGLhZ5mpVkeWwz1uL5NdhcqbHCDOWLSBzU"
+TOKEN = "8377189184:AAGgnpBc-Dovr8NbzCdgm20NqXEa5xj89uk"
 MY_ADMIN_ID = 5825392632
-genai.configure(api_key="AIzaSyDyqdXgJjjSNP2zhUFbeMSxrhk39PgnUOM")
+genai.configure(api_key="AIzaSyC4jwA3cnaakK_e-8EaLFfnsuqUkGXpoHI")
 ai_model = genai.GenerativeModel('gemini-1.5-flash')
 
 bot = telebot.TeleBot(TOKEN)
@@ -15,32 +15,41 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ------------------ نظام الذكاء الاصطناعي ------------------
 def ask_shaza(prompt_type):
-    prompts = {
-        "poetry": "اكتب بيت شعر واحد فقط باللهجة العراقية عن الطموح والنجاح، وبدي كل مرة يكون البيت مختلف.",
-        "quote": "أعطني اقتباساً عالمياً ملهماً عن الإصرار مع ذكر اسم صاحب المقولة، غير اللي قلته قبل قليل.",
-        "boost": "أنتِ شهد، طالبة صيدلة زميلة ومحبة. وجهي رسالة تحفيزية قصيرة جداً بلهجة سورية لطيفة لزميلك غيث، كل مرة غيري العبارة."
+    # قائمة رسايل منوعة ومنعشة عشان نكسر الملل فوراً
+    fallback_messages = {
+        "poetry": [
+            "ما ضاقت إلا فرجت، اصبر وتشوف الخير..",
+            "أنت اللي تبني حلمك، لا تخلي اليأس يكسرك..",
+            "بكرة تهون وتصير ذكريات، اضحك للدنيا.."
+        ],
+        "quote": [
+            "النجاح ليس نهائياً، والفشل ليس قاتلاً. - تشرشل",
+            "آمن بأنك تستطيع، وستكون قد قطعت نصف الطريق. - روزفلت",
+            "الطموح هو الوقود الذي يساعدك على الاستمرار."
+        ],
+        "boost": [
+            "يا بطل، الصيدلة صعبة بس أنت قدها! 💊",
+            "استراحة محارب وكمل، حلم الدكتوراه ناطرك.. ✨",
+            "تذكر إنك رح تكون فخر لعيلتك ولنا، استمر! 🚀"
+        ]
     }
-    
+
     try:
-        # تأكد إننا عم نستخدم الموديل الصح جوا الدالة
-        response = ai_model.generate_content(prompts[prompt_type])
+        # محاولة الاتصال بالذكاء الاصطناعي
+        genai.configure(api_key="AIzaSyC4jwA3cnaakK_e-8EaLFfnsuqukGXpoHI")
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompts[prompt_type])
         
+        # إذا نجح الاتصال وطلعت نتيجة جديدة
         if response and response.text:
             return response.text
-        else:
-            return "يا غيث، الـ AI عطى رد فارغ، جرب مرة تانية."
             
     except Exception as e:
-        # هي السطر عشان يطبعلك السبب الحقيقي للخطأ بالـ Terminal في ريلواي
-        print(f"❌ AI Error: {e}")
+        print(f"❌ AI connection failed: {e}")
         
-        # ردود متنوعة يدوية عشان ما تمل إذا فصل الـ AI
-        fallback_responses = [
-            "النجاح بدو صبر، وأنت قده يا دكتور غيث! ✨",
-            "استريح شوي وكمل، صيدلة مو سهلة بس أنت بطل. 💊",
-            "لا تنسى هدفك، المنحة التركية ناطرتك! 🚀"
-        ]
-        return random.choice(fallback_responses)
+    # إذا فشل الـ AI، السطر اللي تحت رح يختار رسالة عشوائية من القائمة اللي فوق
+    # هيك مستحيل الرسالة تتكرر مرتين ورا بعض!
+    return random.choice(fallback_messages[prompt_type])
 # ------------------ حفظ المشتركين وإرسال الملفات ------------------
 def save_user(chat_id):
     with open("users.txt", "a+") as f:
