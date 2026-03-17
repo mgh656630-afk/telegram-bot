@@ -5,9 +5,9 @@ import random
 import google.generativeai as genai
 
 # ⚠️ الإعدادات الأساسية
-TOKEN = "8377189184:AAGgnpBc-Dovr8NbzCdgm20NqXEa5xj89uk"
+TOKEN = os.getenv("TOKEN")
 MY_ADMIN_ID = 5825392632
-genai.configure(api_key="AIzaSyC4jwA3cnaakK_e-8EaLFfnsuqUkGXpoHI")
+genai.configure(api_key=os.getenv("GEMINI_KEY"))
 ai_model = genai.GenerativeModel('gemini-1.5-flash')
 
 bot = telebot.TeleBot(TOKEN)
