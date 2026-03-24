@@ -3,13 +3,15 @@ from telebot import types
 import os
 import random
 
-# الإعدادات الأساسية
-TOKEN = "8377189184:AAGLhZ5mpVkeWwz1uL5NdhcqbHCDOWLSBzU"
+# ------------------ الإعدادات الأساسية ------------------
+# جلب التوكن من متغيرات البيئة في ريلواي مباشرة
+TOKEN = os.getenv("TOKEN") 
 MY_ADMIN_ID = 5825392632
+
 bot = telebot.TeleBot(TOKEN)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# ------------------ مكتبة العبارات ------------------
+# ------------------ مكتبة العبارات الثابتة ------------------
 POETRY_LIST = [
     "يا أول نبع غنّت عليه طيور.. ويا جرة ذهب معزولة بالبيت.",
     "إنتَ الهوى وأنفاسي من دونك تضيق.. يا أغلى من الروح يا رفيقي وصديقي.",
@@ -33,7 +35,7 @@ def send_file(chat_id, file_name, file_type="document"):
     path = os.path.join(BASE_DIR, file_name)
     
     if not os.path.exists(path):
-        bot.send_message(chat_id, f"⚠️ عذراً، لم يتم العثور على الملف: {file_name}")
+        bot.send_message(chat_id, f"⚠️ عذراً زميلي، لم يتم العثور على الملف: `{file_name}`")
         return
 
     try:
@@ -51,7 +53,7 @@ def main_menu(chat_id, name=""):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     markup.add("🛒 متجر زاد", "📂 نماذج مجانية", "💎 استشارة VIP")
     markup.add("📜 الشعر", "💭 اقتباسات", "🔥 تحفيز")
-    markup.add("📖 رواية قيامة الروح") # الزر الجديد هنا
+    markup.add("📖 رواية قيامة الروح")
     markup.add("🔄 إعادة تشغيل")
     greeting = f"أهلاً {name} 👋" if name else "أهلاً بك 👋"
     bot.send_message(chat_id, greeting, reply_markup=markup)
@@ -77,6 +79,7 @@ def handle(message):
     chat_id = message.chat.id
     user_name = message.from_user.first_name
 
+    # التعامل مع الأزرار
     if text == "🛒 متجر زاد":
         store_menu(chat_id)
     elif text == "📂 نماذج مجانية":
@@ -96,10 +99,10 @@ def handle(message):
         send_file(chat_id, "molahathat.pdf")
         send_file(chat_id, "molahathat2.pdf")
 
-    # معالجة زر الرواية الجديد
     elif text == "📖 رواية قيامة الروح":
-        bot.send_message(chat_id, "📖 جاري تحميل رواية 'قيامة الروح'.. قراءة ممتعة!")
-        send_file(chat_id, "2242.pdf")# المكتبة اللغوية
+        bot.send_message(chat_id, "📖 جاري إرسال الرواية.. قراءة ممتعة!")
+        send_file(chat_id, "2242.pdf")
+
     elif text == "📜 الشعر":
         bot.send_message(chat_id, random.choice(POETRY_LIST))
     elif text == "💭 اقتباسات":
@@ -117,4 +120,7 @@ def handle(message):
         main_menu(chat_id, user_name)
 
 # التشغيل
-bot.infinity_polling()
+if __name__ == "__main__":
+    print("🚀 البوت انطلق بنجاح يا غيث!")
+    bot.infinity_polling()
+    
