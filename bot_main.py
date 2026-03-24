@@ -7,7 +7,7 @@ import random
 TOKEN = "8377189184:AAGLhZ5mpVkeWwz1uL5NdhcqbHCDOWLSBzU"
 MY_ADMIN_ID = 5825392632
 bot = telebot.TeleBot(TOKEN)
-BASE_DIR = os.path.dirname(os.path.abspath(file))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ------------------ مكتبة العبارات ------------------
 POETRY_LIST = [
