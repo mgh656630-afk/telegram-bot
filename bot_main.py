@@ -3,32 +3,20 @@ from telebot import types
 import os
 import random
 
+# استيراد قائمة النصوص من الملف الخارجي
+try:
+    from data import CREATIVE_LIST
+except ImportError:
+    # في حال نسيان إنشاء ملف data.py، نضع قائمة احتياطية لتجنب توقف البوت
+    CREATIVE_LIST = ["جاري تجهيز محتوى الإبداع.. انتظرونا! ✨"]
+
 # ------------------ الإعدادات الأساسية ------------------
-# جلب التوكن من متغيرات البيئة في ريلواي مباشرة
+# جلب التوكن من متغيرات البيئة (مناسب لـ Railway)
 TOKEN = os.getenv("TOKEN") 
 MY_ADMIN_ID = 5825392632
 
 bot = telebot.TeleBot(TOKEN)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# ------------------ مكتبة العبارات الثابتة ------------------
-POETRY_LIST = [
-    "يا أول نبع غنّت عليه طيور.. ويا جرة ذهب معزولة بالبيت.",
-    "إنتَ الهوى وأنفاسي من دونك تضيق.. يا أغلى من الروح يا رفيقي وصديقي.",
-    "كون العمر بستان وإنت الورد بيه.. كلما يمرني الضيق بضحكتك أعديه."
-]
-
-QUOTES_LIST = [
-    "«القراءة تجعل من الشخص إنساناً كاملاً، والمشورة تجعله شخصاً مستعداً، والكتابة تجعله شخصاً دقيقاً».",
-    "«ليس المهم ما يحدث لك، بل المهم كيف تتفاعل معه».",
-    "«الجمال يكمن في بساطة الأشياء وعمق الأثر»."
-]
-
-MOTIVATION_LIST = [
-    "تذكّر أن طريق الألف ميل يبدأ بخطوة، وخطوتك اليوم هي أساس نجاحك غداً 🚀.",
-    "لا تتوقف عندما تتعب، توقف عندما تنتهي.. النجاح يليق بك جداً.",
-    "كل سهر وتعب اليوم، سيتحول لقصة نجاح ترويها بكل فخر لاحقاً."
-]
 
 # ------------------ دالة إرسال الملفات المطورة ------------------
 def send_file(chat_id, file_name, file_type="document"):
@@ -49,41 +37,56 @@ def send_file(chat_id, file_name, file_type="document"):
         print(f"Error: {e}")
 
 # ------------------ القوائم (Keyboard Markup) ------------------
+
+# القائمة الرئيسية (الأزرار الأربعة)
 def main_menu(chat_id, name=""):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("🛒 متجر زاد", "📂 نماذج مجانية", "💎 استشارة VIP")
-    markup.add("📜 الشعر", "💭 اقتباسات", "🔥 تحفيز")
-    markup.add("📖 رواية قيامة الروح")
-    markup.add("🔄 إعادة تشغيل")
-    greeting = f"أهلاً {name} 👋" if name else "أهلاً بك 👋"
+    
+    btn_novel = types.KeyboardButton("📖 الروايات")
+    btn_creative = types.KeyboardButton("✨ عالم الإبداع")
+    btn_bac = types.KeyboardButton("🎓 البكالوريا والملفات")
+    btn_uni = types.KeyboardButton("🏛️ الجامعة")
+    
+    # توزيع الأزرار بشكل متناسق
+    markup.add(btn_novel, btn_creative, btn_bac, btn_uni)
+    markup.add(types.KeyboardButton("🔄 إعادة تشغيل"))
+    
+    greeting = f"أهلاً بك زميلي {name} في بوتك المطور 👋"
     bot.send_message(chat_id, greeting, reply_markup=markup)
 
-def store_menu(chat_id):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("📝 دفتر الشهر", "📓 Notebook", "📞 تواصل معي", "🔙 رجوع")
-    bot.send_message(chat_id, "🛒 منتجات متجر زاد:", reply_markup=markup)
-
-def free_menu(chat_id):
+# قائمة البكالوريا الفرعية
+def bac_menu(chat_id):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     markup.add("📅 جدول 14 يوم", "📅 جدول 20 يوم", "📅 جدول رمضان", "🧲 نوطة مغناطيسية", "🔙 رجوع")
-    bot.send_message(chat_id, "📂 اختر نموذج:", reply_markup=markup)
+    bot.send_message(chat_id, "📂 قسم البكالوريا - اختر الملف المطلوب:", reply_markup=markup)
 
 # ------------------ معالجة الرسائل ------------------
+
 @bot.message_handler(commands=["start"])
 def start(message):
     main_menu(message.chat.id, message.from_user.first_name)
 
 @bot.message_handler(func=lambda m: True)
-def handle(message):
+def handle_messages(message):
     text = message.text
     chat_id = message.chat.id
     user_name = message.from_user.first_name
 
-    # التعامل مع الأزرار
-    if text == "🛒 متجر زاد":
-        store_menu(chat_id)
-    elif text == "📂 نماذج مجانية":
-        free_menu(chat_id)
+    # 1. زر الروايات
+    if text == "📖 الروايات":
+        bot.send_message(chat_id, "📖 يتم الآن إرسال رواية (قيامة الروح).. قراءة ممتعة!")
+        send_file(chat_id, "2242.pdf")
+
+    # 2. زر عالم الإبداع (اختيار عشوائي من الـ 100 نص)
+    elif text == "✨ عالم الإبداع":
+        random_text = random.choice(CREATIVE_LIST)
+        bot.send_message(chat_id, random_text)
+
+    # 3. زر البكالوريا
+    elif text == "🎓 البكالوريا والملفات":
+        bac_menu(chat_id)
+    
+    # معالجة ملفات البكالوريا
     elif text == "📅 جدول 14 يوم":
         send_file(chat_id, "schedule.pdf")
     elif text == "📅 جدول 20 يوم":
@@ -92,35 +95,17 @@ def handle(message):
         send_file(chat_id, "ramadan.pdf")
     elif text == "🧲 نوطة مغناطيسية":
         send_file(chat_id, "magnetic_note.pdf")
-    elif text == "📝 دفتر الشهر":
-        for img in ["shahr1.jpg", "shahr2.jpg", "zadk.jpg", "zadk2.jpg"]:
-            send_file(chat_id, img, "photo")
-    elif text == "📓 Notebook":
-        send_file(chat_id, "molahathat.pdf")
-        send_file(chat_id, "molahathat2.pdf")
 
-    elif text == "📖 رواية قيامة الروح":
-        bot.send_message(chat_id, "📖 جاري إرسال الرواية.. قراءة ممتعة!")
-        send_file(chat_id, "2242.pdf")
+    # 4. زر الجامعة
+    elif text == "🏛️ الجامعة":
+        bot.send_message(chat_id, "🏛️ هذا القسم مخصص لطلاب الجامعات.. سيتم إضافة المحتوى قريباً جداً، انتظرونا!")
 
-    elif text == "📜 الشعر":
-        bot.send_message(chat_id, random.choice(POETRY_LIST))
-    elif text == "💭 اقتباسات":
-        bot.send_message(chat_id, random.choice(QUOTES_LIST))
-    elif text == "🔥 تحفيز":
-        bot.send_message(chat_id, random.choice(MOTIVATION_LIST))
-
-    elif text == "💎 استشارة VIP":
-        bot.send_message(chat_id, "يرجى تحويل 100 ليرة عبر سيرياتيل كاش (43236225) وإرسال صورة الإيصال.")
-    elif text == "📞 تواصل معي":
-        markup = types.InlineKeyboardMarkup()
-        markup.add(types.InlineKeyboardButton("📩 تلغرام", url="https://t.me/V_u_23"))
-        bot.send_message(chat_id, "تواصل معي عبر الرابط:", reply_markup=markup)
+    # خيارات العودة والتشغيل
     elif text in ["🔙 رجوع", "🔄 إعادة تشغيل"]:
         main_menu(chat_id, user_name)
 
-# التشغيل
+# ------------------ تشغيل البوت ------------------
 if __name__ == "__main__":
-    print("🚀 البوت انطلق بنجاح يا غيث!")
+    print("🚀 البوت انطلق بنجاح يا غيث.. شهد جاهزة للعمل!")
     bot.infinity_polling()
     
