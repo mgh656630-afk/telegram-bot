@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الكيمياء العضوية 1 - المحاضرة الأولى</title>
+    <style>
+        :root { --primary: #4ecca3; --bg: #1a1a2e; --card: #16213e; --text: #e0e0e0; --wrong: #e74c3c; --correct: #2ecc71; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); padding: 15px; line-height: 1.6; margin: 0; }
+        .container { max-width: 800px; margin: auto; }
+        header { text-align: center; padding: 20px 0; border-bottom: 2px solid var(--primary); margin-bottom: 30px; }
+        h1 { color: var(--primary); margin: 0; font-size: 1.8em; }
+        .quiz-card { background: var(--card); margin-bottom: 20px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .question { font-size: 1.1em; font-weight: bold; margin-bottom: 15px; display: block; color: #fff; }
+        .options { list-style: none; padding: 0; margin: 0; }
+        .option { background: #0f3460; padding: 12px; margin: 10px 0; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; position: relative; }
+        .option:hover { border-color: var(--primary); }
+        .option.selected-correct { background: var(--correct) !important; color: white; border-color: #27ae60; }
+        .option.selected-wrong { background: var(--wrong) !important; color: white; border-color: #c0392b; }
+        .option.show-correct { background: var(--correct); color: white; opacity: 0.9; }
+        .explanation { display: none; margin-top: 15px; padding: 12px; background: rgba(78,204,163,0.1); border-right: 4px solid var(--primary); border-radius: 4px; font-size: 0.95em; color: var(--primary); font-weight: 500; }
+        .disabled { pointer-events: none; }
+        footer { text-align: center; margin-top: 40px; padding: 20px; color: #95a5a6; font-size: 0.85em; border-top: 1px solid #16213e; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🧪 اختبار الكيمياء العضوية 1</h1>
+        <p>المحاضرة الأولى | إعداد الزميل غيث 💙</p>
+    </header>
+
+    <div id="quiz-container">
+        </div>
+
+    <footer>
+        جميع الحقوق محفوظة - مبرمج البوت: غيث © 2026
+    </footer>
+</div>
+
+<script>
+    const quizData = [
+        { q: "س1: كم عدد الإلكترونات 'العزباء' في ذرة الكربون في حالتها المثارة؟", o: ["أ) إلكترون واحد", "ب) إلكترونان", "ج) ثلاثة إلكترونات", "د) أربعة إلكترونات"], a: 3, e: "في الحالة المثارة ينتقل إلكترون من 2s إلى 2p ليصبح التكافؤ رباعياً. (صفحة 9)" },
+        { q: "س2: العملية التي ينتقل فيها إلكترون من 2s إلى 2p ليكون الكربون رباعي التكافؤ تسمى:", o: ["أ) التهجين", "ب) الإزاحة الإلكترونية", "ج) الإثارة (Excitation)", "د) الانفصام"], a: 2, e: "الإثارة هي امتصاص طاقة لنقل الإلكترون لمستوى طاقي أعلى. (صفحة 9)" },
+        { q: "س3: ما هو التعريف الدقيق للتهجين (Hybridization)؟", o: ["أ) انتقال إلكترونات", "ب) اندماج مدارات ذرية لإنتاج مدارات هجينة متساوية", "ج) كسر روابط", "د) سحب إلكترونات"], a: 1, e: "التهجين هو عملية تسوية طاقية وشكلية للمدارات الذرية. (صفحة 9)" },
+        { q: "س4: في جزيء الميثان (CH4)، تترتب المدارات الهجينة sp3 لتعطي شكلاً فراغياً هو:", o: ["أ) مثلث مستوي", "ب) خطي مستقيم", "ج) رباعي وجوه منتظم", "د) هرمي"], a: 2, e: "تتوزع الروابط الأربعة بشكل رباعي وجوه منتظم لتقليل التنافر. (صفحة 3)" },
+        { q: "س5: كم تبلغ الزاوية بين الروابط في ذرة الكربون ذات التهجين sp3؟", o: ["أ) 120 درجة", "ب) 180 درجة", "ج) 109.5 درجة", "د) 90 درجة"], a: 2, e: "الزاوية 109.5 هي الزاوية المثالية في الشكل رباعي الوجوه. (صفحة 3)" },
+        { q: "س6: ينتج نمط التهجين المثلثي sp2 من اتحاد مدار s مع:", o: ["أ) 3 مدارات p", "ب) مدارين p", "ج) مدار p واحد", "د) مدار d"], a: 1, e: "يندمج مدار s مع مدارين p ويبقى مدار p ثالث نقي للرابطة باي. (صفحة 4)" },
+        { q: "س7: في جزيء الإيتلن (C2H4)، تتشكل الرابطة π نتيجة:", o: ["أ) تداخل sp2 رأسياً", "ب) تداخل مدارات p النقية جانبياً", "ج) تداخل s مع p", "د) تداخل sp3"], a: 1, e: "الرابطة π تنشأ من التداخل الجانبي للمدارات p غير المهجنة. (صفحة 4)" },
+        { q: "س8: ما هو مقدار الزاوية في جزيء الأستيلين (C2H2) ونوع التهجين؟", o: ["أ) 120 درجة، sp2", "ب) 109.5 درجة، sp3", "ج) 180 درجة، sp", "د) 180 درجة، sp2"], a: 2, e: "التهجين sp يعطي توزعاً خطياً بزاوية مستقيمة 180 درجة. (صفحة 4)" },
+        { q: "س9: الرابطة الثلاثية في الأستيلين (Ethyne) تتألف من:", o: ["أ) ثلاث روابط سيغما", "ب) رابطة سيغما واحدة ورابطتي باي", "ج) ثلاث روابط باي", "د) رابطتي سيغما ورابطة باي"], a: 1, e: "تتكون من رابطة قوية سيغما ورابطتين جانبيتين باي. (صفحة 5)" },
+        { q: "س10: المركب الذي يمتلك السلسلة الكربونية (2-ميثيل بروبان) هو:", o: ["أ) البيوتان", "ب) الإيزوبوتان", "ج) البروبان الحلقي", "د) الإيتان"], a: 1, e: "الإيزوبوتان هو المماكب المتفرع للبيوتان النظامي. (صفحة 6)" },
+        { q: "س11: أي من الذرات التالية هي الأعلى كهرسلبية؟", o: ["أ) الكلور", "ب) الأكسجين", "ج) النيتروجين", "د) الفلور"], a: 3, e: "الفلور هو أكثر العناصر كهرسلبية في الجدول الدوري. (صفحة 1)" },
+        { q: "س12: التأثير التحريضي هو استقطاب دائم في الروابط:", o: ["أ) سيغما (σ) المتوضعة", "ب) باي (π)", "ج) الأيونية فقط", "د) الهيدروجينية"], a: 0, e: "ينتقل التأثير التحريضي عبر الروابط الأحادية سيغما فقط. (صفحة 1)" },
+        { q: "س13: يتلاشى التأثير التحريضي ويصبح شبه منعدم بعد:", o: ["أ) الرابطة الأولى", "ب) الرابطة الثانية", "ج) الرابطة الثالثة أو الرابعة", "د) لا يتلاشى"], a: 2, e: "يضعف التأثير مع زيادة المسافة عن الذرة الكهرسلبية. (صفحة 1)" },
+        { q: "س14: التأثير الميزوميري أو الترافقي يحدث في:", o: ["أ) الروابط سيغما فقط", "ب) الجمل المترافقة (روابط باي ثنائية)", "ج) الألكانات فقط", "د) الذرات المعزولة"], a: 1, e: "يتطلب وجود نظام مترافق للسماح بانزياح إلكترونات باي. (صفحة 7)" },
+        { q: "س15: يعتبر 'الأكرولين' مثالاً شهيراً على حدوث:", o: ["أ) التأثير التحريضي فقط", "ب) الانفصام المتجانس", "ج) التأثير الميزوميري", "د) التهجين sp3"], a: 2, e: "يحدث ترافق بين الرابطة الثنائية وزمرة الكربونيل. (صفحة 7)" },
+        { q: "س16: عند حدوث انفصام متجانس للرابطة التشاركية تنتج:", o: ["أ) أيونات موجبة", "ب) أيونات سالبة", "ج) راديكالات حرة", "د) نوكليوفيلات"], a: 2, e: "الانفصام المتجانس يعطي كل جزء إلكتروناً واحداً (جذر حر). (صفحة 7)" },
+        { q: "س17: أي من الكواشف التالية يعتبر كاشفاً نوكليوفيلياً محباً للنواة؟", o: ["أ) NO2+", "ب) الأمونيا (NH3)", "ج) Cl+", "د) SO3H"], a: 1, e: "تمتلك الأمونيا زوجاً إلكترونياً وحيداً يهاجم المناطق الموجبة. (صفحة 8)" },
+        { q: "س18: الكواشف الإلكتروفيلية هي دقائق:", o: ["أ) غنية بالإلكترونات", "ب) فقيرة بالإلكترونات وتهاجم الكثافة العالية", "ج) متعادلة لا تتفاعل", "د) سالبة دائماً"], a: 1, e: "الإلكتروفيل محب للإلكترونات لأنه يفتقر إليها. (صفحة 8)" },
+        { q: "س19: كم عدد الإلكترونات في الطبقة الخارجية لإيون الكربونيوم (+C)؟", o: ["أ) 8 إلكترونات", "ب) 4 إلكترونات", "ج) 6 إلكترونات", "د) 2 إلكترون"], a: 2, e: "فقد الكربون إلكتروناً وبقي بـ 3 روابط فقط (6 إلكترونات). (صفحة 2)" },
+        { q: "س20: الدقيقة البينية السالبة التي تسمى (Carbanion) تمتلك:", o: ["أ) 6 إلكترونات", "ب) 8 إلكترونات وشحنة سالبة", "ج) إلكترون واحد منفرد", "د) شحنة موجبة"], a: 1, e: "الكربأنيون يحمل شحنة سالبة وزوجاً إلكترونياً (8 إلكترونات). (صفحة 2)" }
+    ];
+
+    const container = document.getElementById('quiz-container');
+
+    quizData.forEach((data, index) => {
+        const card = document.createElement('div');
+        card.className = 'quiz-card';
+        card.innerHTML = `
+            <span class="question">${data.q}</span>
+            <ul class="options" id="options-${index}">
+                ${data.o.map((opt, i) => `<li class="option" onclick="handleSelect(${index}, ${i})">${opt}</li>`).join('')}
+            </ul>
+            <div id="exp-${index}" class="explanation"></div>
+        `;
+        container.appendChild(card);
+    });
+
+    function handleSelect(qIdx, oIdx) {
+        const optionsList = document.getElementById(`options-${qIdx}`);
+        const options = optionsList.getElementsByClassName('option');
+        const expDiv = document.getElementById(`exp-${qIdx}`);
+        const correctIdx = quizData[qIdx].a;
+
+        if (optionsList.classList.contains('disabled')) return;
+
+        optionsList.classList.add('disabled');
+
+        if (oIdx === correctIdx) {
+            options[oIdx].classList.add('selected-correct');
+            expDiv.innerHTML = "✅ إجابة صحيحة! <br>" + quizData[qIdx].e;
+        } else {
+            options[oIdx].classList.add('selected-wrong');
+            options[correctIdx].classList.add('show-correct');
+            expDiv.innerHTML = "❌ إجابة خاطئة. <br>" + quizData[qIdx].e;
+        }
+        expDiv.style.display = 'block';
+    }
+</script>
+</body>
+</html>
