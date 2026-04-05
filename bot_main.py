@@ -37,13 +37,12 @@ def main_menu(chat_id, name=""):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     markup.add("📖 الروايات", "✨ عالم الإبداع")
     markup.add("🎓 البكالوريا والملفات", "🏛️ الجامعة")
-    markup.add("💎 استشارة VIP") # إضافة زر الاستشارة للقائمة الرئيسية
-    markup.add("🔄 إعادة تشغيل")
+    markup.add("💎 استشارة VIP", "🔄 إعادة تشغيل")
     bot.send_message(chat_id, f"أهلاً بك {name} 👋\nاختر من الأقسام المتاحة:", reply_markup=markup)
 
 def bac_menu(chat_id):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("📅 الجداول والنوط", "🛒 متجر زاد") # تقسيم البكالوريا لملفات ومتجر
+    markup.add("📅 الجداول والنوط", "🛒 متجر زاد")
     markup.add("🔙 رجوع")
     bot.send_message(chat_id, "🎓 قسم البكالوريا:", reply_markup=markup)
 
@@ -72,12 +71,18 @@ def handle_messages(message):
     # 1. الروايات والإبداع والجامعة
     if text == "📖 الروايات":
         send_file(chat_id, "2242.pdf")
+    
     elif text == "✨ عالم الإبداع":
         bot.send_message(chat_id, random.choice(CREATIVE_LIST))
-    elif text == "🏛️ الجامعة":
-        bot.send_message(chat_id, "🏛️ سيتم إضافة محتوى لطلاب الصيدلة والجامعات قريباً!")
 
-    # 2. قسم البكالوريا (التنقل الجديد)
+    elif text == "🏛️ الجامعة":
+        markup = types.InlineKeyboardMarkup()
+        quiz_url = "https://raw.githubusercontent.com/mgh656630-afk/telegram-bot/refs/heads/main/Organic_Ch1_Quiz.html"
+        btn = types.InlineKeyboardButton(text="📝 ابدأ اختبار العضوية 1 (تفاعلي)", url=quiz_url)
+        markup.add(btn)
+        bot.send_message(chat_id, "أهلاً بك يا دكتور في قسم الجامعة 🧪\n\nاضغط على الزر أدناه لفتح الاختبار التفاعلي للمحاضرة الأولى:", reply_markup=markup)
+
+    # 2. قسم البكالوريا
     elif text == "🎓 البكالوريا والملفات":
         bac_menu(chat_id)
     elif text == "📅 الجداول والنوط":
@@ -102,7 +107,7 @@ def handle_messages(message):
     elif text == "📅 جدول رمضان": send_file(chat_id, "ramadan.pdf")
     elif text == "🧲 نوطة مغناطيسية": send_file(chat_id, "magnetic_note.pdf")
 
-    # 5. استشارة VIP (النظام الجديد)
+    # 5. استشارة VIP
     elif text == "💎 استشارة VIP":
         markup = types.InlineKeyboardMarkup()
         btn_pharma = types.InlineKeyboardButton("💊 أنا طالب صيدلة", callback_data="consult_pharma")
@@ -126,4 +131,3 @@ def callback_consult(call):
 if __name__ == "__main__":
     print("🚀 البوت انطلق بكامل التحديثات يا غيث!")
     bot.infinity_polling()
-    
