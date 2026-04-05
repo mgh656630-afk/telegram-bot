@@ -27,7 +27,7 @@ def send_file(chat_id, file_name, file_type="document"):
             if file_type == "photo":
                 bot.send_photo(chat_id, f)
             else:
-                bot.send_document(chat_id, f)
+                bot.send_document(chat_id, f, caption=f"📄 ملف: {file_name}")
     except Exception as e:
         print(f"Error: {e}")
 
@@ -76,11 +76,9 @@ def handle_messages(message):
         bot.send_message(chat_id, random.choice(CREATIVE_LIST))
 
     elif text == "🏛️ الجامعة":
-        markup = types.InlineKeyboardMarkup()
-        quiz_url = "https://raw.githubusercontent.com/mgh656630-afk/telegram-bot/refs/heads/main/Organic_Ch1_Quiz.html"
-        btn = types.InlineKeyboardButton(text="📝 ابدأ اختبار العضوية 1 (تفاعلي)", url=quiz_url)
-        markup.add(btn)
-        bot.send_message(chat_id, "أهلاً بك يا دكتور في قسم الجامعة 🧪\n\nاضغط على الزر أدناه لفتح الاختبار التفاعلي للمحاضرة الأولى:", reply_markup=markup)
+        # إرسال ملف الاختبار التفاعلي مباشرة من السيرفر
+        send_file(chat_id, "Organic_Ch1_Quiz.html")
+        bot.send_message(chat_id, "🧪 تفضل زميلي، هذا هو ملف الاختبار التفاعلي للمحاضرة الأولى.\n\nافتح الملف من جهازك ليظهر لك بشكل تفاعلي ومنظم.")
 
     # 2. قسم البكالوريا
     elif text == "🎓 البكالوريا والملفات":
@@ -119,7 +117,7 @@ def handle_messages(message):
     elif text in ["🔙 رجوع", "🔄 إعادة تشغيل"]:
         main_menu(chat_id, user_name)
 
-# معالجة ضغط أزرار تحديد التخصص (Callback)
+# معالجة ضغط أزرار الكول باك (Inline Buttons)
 @bot.callback_query_handler(func=lambda call: call.data.startswith('consult_'))
 def callback_consult(call):
     chat_id = call.message.chat.id
@@ -131,3 +129,4 @@ def callback_consult(call):
 if __name__ == "__main__":
     print("🚀 البوت انطلق بكامل التحديثات يا غيث!")
     bot.infinity_polling()
+    
