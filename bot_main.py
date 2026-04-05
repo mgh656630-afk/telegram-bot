@@ -7,25 +7,21 @@ import random
 try:
     from data import CREATIVE_LIST
 except ImportError:
-    # في حال نسيان إنشاء ملف data.py، نضع قائمة احتياطية لتجنب توقف البوت
     CREATIVE_LIST = ["جاري تجهيز محتوى الإبداع.. انتظرونا! ✨"]
 
 # ------------------ الإعدادات الأساسية ------------------
-# جلب التوكن من متغيرات البيئة (مناسب لـ Railway)
 TOKEN = os.getenv("TOKEN") 
 MY_ADMIN_ID = 5825392632
 
 bot = telebot.TeleBot(TOKEN)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# ------------------ دالة إرسال الملفات المطورة ------------------
+# ------------------ دالة إرسال الملفات ------------------
 def send_file(chat_id, file_name, file_type="document"):
     path = os.path.join(BASE_DIR, file_name)
-    
     if not os.path.exists(path):
         bot.send_message(chat_id, f"⚠️ عذراً زميلي، لم يتم العثور على الملف: `{file_name}`")
         return
-
     try:
         with open(path, "rb") as f:
             if file_type == "photo":
@@ -33,32 +29,33 @@ def send_file(chat_id, file_name, file_type="document"):
             else:
                 bot.send_document(chat_id, f)
     except Exception as e:
-        bot.send_message(chat_id, "❌ حدث خطأ فني أثناء إرسال الملف.")
         print(f"Error: {e}")
 
-# ------------------ القوائم (Keyboard Markup) ------------------
+# ------------------ القوائم (Keyboards) ------------------
 
-# القائمة الرئيسية (الأزرار الأربعة)
 def main_menu(chat_id, name=""):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    
-    btn_novel = types.KeyboardButton("📖 الروايات")
-    btn_creative = types.KeyboardButton("✨ عالم الإبداع")
-    btn_bac = types.KeyboardButton("🎓 البكالوريا والملفات")
-    btn_uni = types.KeyboardButton("🏛️ الجامعة")
-    
-    # توزيع الأزرار بشكل متناسق
-    markup.add(btn_novel, btn_creative, btn_bac, btn_uni)
-    markup.add(types.KeyboardButton("🔄 إعادة تشغيل"))
-    
-    greeting = f"أهلاً بك زميلي {name} في بوتك المطور 👋"
-    bot.send_message(chat_id, greeting, reply_markup=markup)
+    markup.add("📖 الروايات", "✨ عالم الإبداع")
+    markup.add("🎓 البكالوريا والملفات", "🏛️ الجامعة")
+    markup.add("💎 استشارة VIP") # إضافة زر الاستشارة للقائمة الرئيسية
+    markup.add("🔄 إعادة تشغيل")
+    bot.send_message(chat_id, f"أهلاً بك {name} 👋\nاختر من الأقسام المتاحة:", reply_markup=markup)
 
-# قائمة البكالوريا الفرعية
 def bac_menu(chat_id):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup.add("📅 الجداول والنوط", "🛒 متجر زاد") # تقسيم البكالوريا لملفات ومتجر
+    markup.add("🔙 رجوع")
+    bot.send_message(chat_id, "🎓 قسم البكالوريا:", reply_markup=markup)
+
+def store_menu(chat_id):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup.add("📝 دفتر الشهر", "📓 Notebook", "📞 تواصل مع المتجر", "🔙 رجوع")
+    bot.send_message(chat_id, "🛒 منتجات متجر زاد:", reply_markup=markup)
+
+def free_files_menu(chat_id):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     markup.add("📅 جدول 14 يوم", "📅 جدول 20 يوم", "📅 جدول رمضان", "🧲 نوطة مغناطيسية", "🔙 رجوع")
-    bot.send_message(chat_id, "📂 قسم البكالوريا - اختر الملف المطلوب:", reply_markup=markup)
+    bot.send_message(chat_id, "📂 الملفات المجانية والجداول:", reply_markup=markup)
 
 # ------------------ معالجة الرسائل ------------------
 
@@ -72,40 +69,61 @@ def handle_messages(message):
     chat_id = message.chat.id
     user_name = message.from_user.first_name
 
-    # 1. زر الروايات
+    # 1. الروايات والإبداع والجامعة
     if text == "📖 الروايات":
-        bot.send_message(chat_id, "📖 يتم الآن إرسال رواية (قيامة الروح).. قراءة ممتعة!")
         send_file(chat_id, "2242.pdf")
-
-    # 2. زر عالم الإبداع (اختيار عشوائي من الـ 100 نص)
     elif text == "✨ عالم الإبداع":
-        random_text = random.choice(CREATIVE_LIST)
-        bot.send_message(chat_id, random_text)
+        bot.send_message(chat_id, random.choice(CREATIVE_LIST))
+    elif text == "🏛️ الجامعة":
+        bot.send_message(chat_id, "🏛️ سيتم إضافة محتوى لطلاب الصيدلة والجامعات قريباً!")
 
-    # 3. زر البكالوريا
+    # 2. قسم البكالوريا (التنقل الجديد)
     elif text == "🎓 البكالوريا والملفات":
         bac_menu(chat_id)
-    
-    # معالجة ملفات البكالوريا
-    elif text == "📅 جدول 14 يوم":
-        send_file(chat_id, "schedule.pdf")
-    elif text == "📅 جدول 20 يوم":
-        send_file(chat_id, "schedule20.pdf")
-    elif text == "📅 جدول رمضان":
-        send_file(chat_id, "ramadan.pdf")
-    elif text == "🧲 نوطة مغناطيسية":
-        send_file(chat_id, "magnetic_note.pdf")
+    elif text == "📅 الجداول والنوط":
+        free_files_menu(chat_id)
+    elif text == "🛒 متجر زاد":
+        store_menu(chat_id)
 
-    # 4. زر الجامعة
-    elif text == "🏛️ الجامعة":
-        bot.send_message(chat_id, "🏛️ هذا القسم مخصص لطلاب الجامعات.. سيتم إضافة المحتوى قريباً جداً، انتظرونا!")
+    # 3. محتويات متجر زاد
+    elif text == "📝 دفتر الشهر":
+        for img in ["shahr1.jpg", "shahr2.jpg", "zadk.jpg", "zadk2.jpg"]:
+            send_file(chat_id, img, "photo")
+    elif text == "📓 Notebook":
+        send_file(chat_id, "molahathat.pdf")
+    elif text == "📞 تواصل مع المتجر":
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("📩 تلغرام", url="https://t.me/V_u_23"))
+        bot.send_message(chat_id, "تواصل معي لطلب المنتجات:", reply_markup=markup)
 
-    # خيارات العودة والتشغيل
+    # 4. ملفات البكالوريا
+    elif text == "📅 جدول 14 يوم": send_file(chat_id, "schedule.pdf")
+    elif text == "📅 جدول 20 يوم": send_file(chat_id, "schedule20.pdf")
+    elif text == "📅 جدول رمضان": send_file(chat_id, "ramadan.pdf")
+    elif text == "🧲 نوطة مغناطيسية": send_file(chat_id, "magnetic_note.pdf")
+
+    # 5. استشارة VIP (النظام الجديد)
+    elif text == "💎 استشارة VIP":
+        markup = types.InlineKeyboardMarkup()
+        btn_pharma = types.InlineKeyboardButton("💊 أنا طالب صيدلة", callback_data="consult_pharma")
+        btn_bac = types.InlineKeyboardButton("🎓 أنا طالب بكالوريا", callback_data="consult_bac")
+        markup.add(btn_pharma, btn_bac)
+        bot.send_message(chat_id, "يرجى تحديد تخصصك لنتمكن من مساعدتك بشكل أفضل:", reply_markup=markup)
+
+    # العودة
     elif text in ["🔙 رجوع", "🔄 إعادة تشغيل"]:
         main_menu(chat_id, user_name)
 
-# ------------------ تشغيل البوت ------------------
+# معالجة ضغط أزرار تحديد التخصص (Callback)
+@bot.callback_query_handler(func=lambda call: call.data.startswith('consult_'))
+def callback_consult(call):
+    chat_id = call.message.chat.id
+    if call.data == "consult_pharma":
+        bot.send_message(chat_id, "أهلاً بك زميلي الصيدلاني 💊.\nيرجى تحويل 100 ليرة (سيرياتيل كاش 43236225) وإرسال الإيصال لبدء الاستشارة.")
+    elif call.data == "consult_bac":
+        bot.send_message(chat_id, "بالتوفيق بطل البكالوريا 🎓.\nيرجى تحويل 100 ليرة (سيرياتيل كاش 43236225) وإرسال الإيصال لبدء الاستشارة.")
+
 if __name__ == "__main__":
-    print("🚀 البوت انطلق بنجاح يا غيث.. شهد جاهزة للعمل!")
+    print("🚀 البوت انطلق بكامل التحديثات يا غيث!")
     bot.infinity_polling()
     
