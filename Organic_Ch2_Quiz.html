@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الكيمياء الفراغية التفاعلي</title>
+    <style>
+        :root {
+            --primary-color: #1a237e; /* الكحلي الخاص بشعار الجامعة */
+            --secondary-color: #c5a059; /* الذهبي الخاص بشعار الجامعة */
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-top: 10px solid var(--primary-color);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header .info {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .header .names {
+            color: var(--secondary-color);
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .question-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 12px 20px;
+            border: 2px solid #eee;
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: right;
+            font-size: 1rem;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--secondary-color);
+            background-color: #fff9f0;
+        }
+
+        /* الألوان التفاعلية */
+        .option-btn.correct {
+            background-color: var(--success-color) !important;
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .option-btn.wrong {
+            background-color: var(--error-color) !important;
+            color: white;
+            border-color: var(--error-color);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e8f4fd;
+            border-right: 5px solid var(--primary-color);
+            border-radius: 5px;
+            display: none; /* مخفي افتراضياً */
+            font-size: 0.95rem;
+            color: #2c3e50;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: var(--secondary-color);
+            z-index: 1000;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="container">
+    <div class="header">
+        <h1>اختبار الكيمياء الفراغية</h1>
+        <div class="info">
+            <span>الجامعة الوطنية الخاصة - كلية الصيدلة</span>
+            <div class="names">إعداد: غيث | تنسيق: شهد</div>
+        </div>
+    </div>
+
+    <div id="quiz-container">
+        </div>
+
+    <div class="footer">
+        بالتوفيق لجميع الطلاب في كلية الصيدلة
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            q: "س1: تُعرف الكيمياء الفراغية بأنها العلم الذي يدرس:",
+            options: ["أ) سرعة التفاعلات الكيميائية.", "ب) خواص الجزيئات الناتجة عن اختلاف توزيع الزمر في الفراغ ثلاثي الأبعاد.", "ج) الأوزان الذرية للعناصر فقط.", "د) الروابط الأيونية بين المعادن."],
+            correct: 1,
+            exp: "لأن الكيمياء الفراغية تهتم بـ 'الفراغ' وتوزيع الذرات ثلاثي الأبعاد وكيف يؤثر ذلك على خواص المادة."
+        },
+        {
+            q: "س2: أي من الأجسام التالية يعتبر 'متناظراً' بحيث ينطبق على خياله في المرآة؟",
+            options: ["أ) اليد اليمنى.", "ب) صندوق ذو بقعة على أحد جوانبه.", "ج) مكعب عادي.", "د) قفاز اليد اليسرى."],
+            correct: 2,
+            exp: "المكعب العادي جسم متناظر تماماً، أي أن صورته في المرآة مطابقة تماماً للجسم الأصلي."
+        },
+        {
+            q: "س3: ما هو المصطلح الذي يصف الجزيئات التي لا تنطبق على خيالها في المرآة (اللاتطابق)؟",
+            options: ["أ) التناظر (Symmetry).", "ب) اليدوية (Chirality).", "ج) الامتزاج (Miscibility).", "د) التبلور (Crystallization)."],
+            correct: 1,
+            exp: "اليدوية (Chirality) هي الخاصية التي تصف الأجسام غير القابلة للاتطابق مع صورها في المرآة."
+        },
+        {
+            q: "س4: كم عدد مستويات التناظر في جزيء الفورم ألدهيد؟",
+            options: ["أ) مستوى واحد.", "ب) مستويان.", "ج) ثلاثة مستويات.", "د) لا يوجد مستويات تناظر."],
+            correct: 1,
+            exp: "يمتلك مستويي تناظر بفضل شكله المستوي وتوزع ذراته."
+        },
+        {
+            q: "س5: لماذا تمتلك الجزيئات ذات التهجين SP2 (مثل الفورم ألدهيد) مستويات تناظر بسهولة؟",
+            options: ["أ) لأن زواياها 120 درجة وتقع متبادلاتها في المستوي نفسه.", "ب) لأنها تحتوي على ذرة كربون لامتناظرة.", "ج) لأن متبادلاتها دائماً هيدروجين.", "د) لأنها تدور الضوء المستقطب."],
+            correct: 0,
+            exp: "التهجين SP2 يفرض شكلاً مستوياً (Planar)، مما يجعل وجود مستويات تناظر أمراً حتمياً."
+        },
+        {
+            q: "س6: أي مركب مما يلي يمتلك 'مركز تناظر'؟",
+            options: ["أ) الميثان.", "ب) حمض اللاكتيك.", "ج) مفروق - 1,3 - ثنائي كلور حلقي البوتان.", "د) الغليسرالدهيد."],
+            correct: 2,
+            exp: "في هذا المركب، توجد نقطة مركزية بحيث أن كل زمرة يقابلها زمرة مماثلة في الجهة المعاكسة تماماً."
+        },
+        {
+            q: "س7: لكي تعتبر ذرة الكربون 'مركزاً لامتناظراً'، يجب أن ترتبط بـ:",
+            options: ["أ) ذرتي هيدروجين على الأقل.", "ب) أربع مجموعات (متبادلات) مختلفة تماماً.", "ج) رابطة ثنائية ورابطتين أحاديتين.", "د) أربع ذرات متشابهة."],
+            correct: 1,
+            exp: "هذا هو الشرط الجوهري للكربون الكيرالي: الارتباط بـ 4 مجموعات مختلفة كيميائياً."
+        },
+        {
+            q: "س8: أي من الجزيئات التالية 'لا' يمتلك أي عنصر تناظر وهو لامتناظر (Chiral)؟",
+            options: ["أ) الميثان.", "ب) كلور الميثان.", "ج) بروم كلور الميثان.", "د) بروم كلور فلور الميثان."],
+            correct: 3,
+            exp: "بروم كلور فلور الميثان يحتوي على 4 متبادلات مختلفة، مما يجعله جزيئاً كيرالياً بامتياز."
+        },
+        {
+            q: "س9: يُطلق على المماكبات الضوئية التي يمثل أحدهما خيال المرآة للآخر ولا ينطبقان اسم:",
+            options: ["أ) المتبادلات.", "ب) الانانتيومرات (Enantiomers).", "ج) المتصاوغات الهندسية.", "د) المزيج الراسيمي."],
+            correct: 1,
+            exp: "الانانتيومرات هي أزواج من المماكبات التي تربط بينها علاقة 'الجسم وخياله' في المرآة."
+        },
+        {
+            q: "س10: ما هو الجهاز المستخدم كـ 'مقطب' للضوء العادي لتمييز المتخايلات الضوئية؟",
+            options: ["أ) ميزان الحرارة.", "ب) موشور نيكول.", "ج) أنبوب الاختبار.", "د) المجهر الإلكتروني."],
+            correct: 1,
+            exp: "موشور نيكول هو الأداة الأساسية في جهاز المقطب (Polarimeter) الذي يمرر الضوء في مستوٍ واحد."
+        },
+        {
+            q: "س11: تُسمى المواد التي تملك القدرة على تدوير مستوي الضوء المستقطب بمواد:",
+            options: ["أ) خاملة كيميائياً.", "ب) فعالة ضوئياً.", "ج) متطايرة.", "د) مشعة."],
+            correct: 1,
+            exp: "الفعالية الضوئية هي القدرة الفيزيائية للجزيئات الكيرالية على حرف مسار الضوء المستقطب."
+        },
+        {
+            q: "س12: المماكب الذي يدور مستوي الضوء باتجاه عقارب الساعة يُسمى:",
+            options: ["أ) يساري التدوير (-).", "ب) يميني التدوير (+).", "ج) راسمياً.", "د) غير فعال."],
+            correct: 1,
+            exp: "Dextrorotatory أو يميني التدوير (+) هو المصطلح للمواد التي تدور الضوء لليمين."
+        },
+        {
+            q: "س13: يعتمد الدوران النوعي لمادة ما على:",
+            options: ["أ) طول موجة الضوء ودرجة الحرارة.", "ب) طول أنبوب العينة وتركيز المحلول.", "ج) طبيعة المادة.", "د) كل ما سبق صحيح."],
+            correct: 3,
+            exp: "جميع العوامل المذكورة (الحرارة، الموجة، التركيز، المسار) تؤثر على قيمة الدوران المقاسة."
+        },
+        {
+            q: "س14: المزيج الراسيمي هو خليط من كميات متساوية من المتخايلين (+) و (-)، وتكون فعاليته الضوئية:",
+            options: ["أ) عالية جداً.", "ب) مساوية للصفر (غير فعال).", "ج) تدوير لليمين فقط.", "د) تدوير لليسار فقط."],
+            correct: 1,
+            exp: "بسبب وجود كميات متساوية، يلغي كل مماكب أثر الآخر، فتكون المحصلة النهائية صفراً."
+        },
+        {
+            q: "س15: في مساقط فيشر، تُمثل الروابط الشاقولية (العمودية) الاتجاه نحو:",
+            options: ["أ) الأمام (باتجاه الناظر).", "ب) الخلف (بعيداً عن الناظر).", "ج) اليمين فقط.", "د) اليسار فقط."],
+            correct: 1,
+            exp: "اتفاقية فيشر تنص على أن الخطوط العمودية تبتعد عن الناظر (للخلف) والأفقية تقترب منه (للأمام)."
+        },
+        {
+            q: "س16: يُصنف 'الغليسرالدهيد' بأنه من التشكيل (D) إذا كانت مجموعة (OH) في مسقط فيشر تقع جهة:",
+            options: ["أ) اليمين.", "ب) اليسار.", "ج) الأعلى.", "د) الأسفل."],
+            correct: 0,
+            exp: "نظام D/L يعتمد على موقع مجموعة OH في الغليسرالدهيد؛ يمين يعني D ويسار يعني L."
+        },
+        {
+            q: "س17: إذا كان الجزيء يحتوي على ذرتي كربون لامتناظرتين (n=2)، فإن عدد المتصاوغات الفراغية هو:",
+            options: ["أ) 2", "ب) 4", "ج) 8", "د) 16"],
+            correct: 1,
+            exp: "حسب قانون فانتهوف 2^n، وبما أن n=2 فإن 2^2 = 4."
+        },
+        {
+            q: "س18: في نظام التشكيل المطلق (R/S)، يتم ترتيب المتبادلات حسب الأفضلية بناءً على:",
+            options: ["أ) الحجم الفيزيائي.", "ب) عدد الذرات.", "ج) العدد الذري للذرة المرتبطة مباشرة.", "د) درجة الغليان."],
+            correct: 2,
+            exp: "قواعد كاهن-اينغولد-بيرلوغ تعتمد حصراً على العدد الذري لترتيب الأولويات."
+        },
+        {
+            q: "س19: أي المجموعات التالية لها الأفضلية (الأولوية) القصوى؟",
+            options: ["أ) -Cl", "ب) -Br", "ج) -I", "د) -F"],
+            correct: 2,
+            exp: "اليود (I) يمتلك أكبر عدد ذري بين الهالوجينات المذكورة، لذا له الأولوية رقم 1."
+        },
+        {
+            q: "س20: في حال تساوت الذرة الأولى في المتبادلات، ننتقل في تحديد الأفضلية إلى:",
+            options: ["أ) الذرة التي تسبقها.", "ب) ذرات النسق الثاني (التي تليها مباشرة).", "ج) لون المحلول.", "د) عدد الروابط الثنائية فقط."],
+            correct: 1,
+            exp: "نقوم بالمقارنة ذرة بذرة على طول السلسلة حتى نجد أول نقطة اختلاف."
+        },
+        {
+            q: "س21: يُرمز للتشكيل الفراغي بالرمز (R) إذا كان ترتيب المجموعات (1 ثم 2 ثم 3) باتجاه:",
+            options: ["أ) عكس عقارب الساعة.", "ب) موازٍ لمستوي الورقة.", "ج) مع عقارب الساعة.", "د) عمودي على الورقة."],
+            correct: 2,
+            exp: "الرمز R مشتق من الكلمة اللاتينية Rectus وتعني اليمين أو مع عقارب الساعة."
+        },
+        {
+            q: "س22: في مسقط فيشر، إذا كان المتبادل الأدنى (رقم 4) على الخط 'الأفقي':",
+            options: ["أ) نعتمد النتيجة.", "ب) نلغي التسمية.", "ج) نعكس النتيجة (R تصبح S).", "د) يكون غير فعال."],
+            correct: 2,
+            exp: "لأن الخط الأفقي يشير للأمام، وهذا يخالف قاعدة تحديد R/S التي تشترط وجود (4) في الخلف."
+        },
+        {
+            q: "س23: ترتيب الأفضلية الصحيح للهالوجينات هو:",
+            options: ["أ) I > Br > Cl > F", "ب) F > Cl > Br > I", "ج) Cl > I > F > Br", "د) Br > I > Cl > F"],
+            correct: 0,
+            exp: "هذا الترتيب يتبع تسلسل تناقص الأعداد الذرية."
+        },
+        {
+            q: "س24: أي مركب استُخدم كمرجع لتحديد التشكيل النسبي (D) و (L)؟",
+            options: ["أ) الميثان.", "ب) الغليسرالدهيد.", "ج) البنزين.", "د) الإيتانول."],
+            correct: 1,
+            exp: "الغليسرالدهيد هو السكر البسيط الذي اعتبره الكيميائيون حجراً للزاوية في تسمية D/L."
+        },
+        {
+            q: "س25: المماكبات الضوئية تتماثل في جميع الخواص الفيزيائية وتختلف فقط في:",
+            options: ["أ) الصيغة الجزيئية.", "ب) عدد الذرات.", "ج) اتجاه تدوير الضوء المستقطب.", "د) الرائحة دائماً."],
+            correct: 2,
+            exp: "هذا هو وجه الاختلاف الوحيد في الظروف غير الكيرالية (اتجاه الانحراف + أو -)."
+        }
+    ];
+
+    const quizContainer = document.getElementById('quiz-container');
+    const progressBar = document.getElementById('progressBar');
+    let answeredQuestions = 0;
+
+    function initQuiz() {
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <span class="question-text">${data.q}</span>
+                <div class="options" id="options-${index}">
+                    ${data.options.map((opt, i) => `
+                        <button class="option-btn" onclick="checkAnswer(this, ${i}, ${data.correct}, ${index})">${opt}</button>
+                    `).join('')}
+                </div>
+                <div class="explanation" id="exp-${index}">
+                    <strong>التوضيح:</strong> ${data.exp}
+                </div>
+            `;
+            quizContainer.appendChild(card);
+        });
+    }
+
+    window.checkAnswer = function(btn, selectedIndex, correctIndex, qIndex) {
+        const optionsDiv = document.getElementById(`options-${qIndex}`);
+        const buttons = optionsDiv.getElementsByClassName('option-btn');
+        const expDiv = document.getElementById(`exp-${qIndex}`);
+
+        // تعطيل الأزرار بعد الإجابة
+        for (let b of buttons) { b.disabled = true; }
+
+        if (selectedIndex === correctIndex) {
+            btn.classList.add('correct');
+        } else {
+            btn.classList.add('wrong');
+            buttons[correctIndex].classList.add('correct'); // تلوين الصحيحة بالأخضر
+        }
+
+        // إظهار التوضيح
+        expDiv.style.display = 'block';
+
+        // تحديث شريط التقدم
+        answeredQuestions++;
+        const progress = (answeredQuestions / quizData.length) * 100;
+        progressBar.style.width = progress + '%';
+    };
+
+    initQuiz();
+</script>
+
+</body>
+</html>
